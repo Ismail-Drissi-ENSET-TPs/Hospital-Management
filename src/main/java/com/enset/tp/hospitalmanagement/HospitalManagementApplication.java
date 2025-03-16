@@ -5,6 +5,8 @@ import com.enset.tp.hospitalmanagement.repositories.ConsultationRepository;
 import com.enset.tp.hospitalmanagement.repositories.MedecinRepository;
 import com.enset.tp.hospitalmanagement.repositories.PatientRepository;
 import com.enset.tp.hospitalmanagement.repositories.RendezVousRepository;
+import com.enset.tp.hospitalmanagement.services.HospitalServiceImpl;
+import com.enset.tp.hospitalmanagement.services.IHospitalService;
 import jdk.jshell.Snippet;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
@@ -22,7 +24,7 @@ public class HospitalManagementApplication {
     }
 
     @Bean
-    public CommandLineRunner run(PatientRepository patientRepository, MedecinRepository medecinRepository, RendezVousRepository rendezVousRepository, ConsultationRepository consultationRepository) {
+    public CommandLineRunner run(IHospitalService hospitalService) {
         return args -> {
             Stream.of("Aziz", "Ismail", "Abdo").forEach(
                     name-> {
@@ -30,7 +32,7 @@ public class HospitalManagementApplication {
                         patient.setName(name);
                         patient.setBirthday(new Date());
                         patient.setMalade(false);
-                        patientRepository.save(patient);
+                        hospitalService.savePatient(patient);
                     }
             );
 
@@ -40,35 +42,28 @@ public class HospitalManagementApplication {
                         medecin.setName(name);
                         medecin.setEmail(name+"@gmail.com");
                         medecin.setSpecialite(Math.random()>0.5?"A":"B");
-                        medecinRepository.save(medecin);
+                        hospitalService.saveMedecin(medecin);
                     }
             );
 
-            Patient patient = new Patient();
-            patient.setBirthday(new Date());
-            patient.setMalade(true);
-            patient.setName("Omar");
-            patientRepository.save(patient);
+            Patient patient = hospitalService.getPatientById(1L);
 
-            Medecin medecin = new Medecin();
-            medecin.setName("Yasmine");
-            medecin.setEmail(medecin.getName()+"@gmail.com");
-            medecin.setSpecialite(Math.random()>0.5?"A":"B");
-            medecinRepository.save(medecin);
+            Medecin medecin = hospitalService.getMedecinById(1L);
 
             RendezVous rendezVous = new RendezVous();
             rendezVous.setMedecin(medecin);
             rendezVous.setPatient(patient);
             rendezVous.setDate(new Date());
             rendezVous.setStatusRV(StatusRV.APPROVED);
-            rendezVousRepository.save(rendezVous);
+            hospitalService.saveRendezVous(rendezVous);
 
 
+            RendezVous rendezVous1 = hospitalService.getRendezVous(1L);
             Consultation consultation = new Consultation();
             consultation.setDate(new Date());
             consultation.setRapport("Good!");
-            consultation.setRendezVous(rendezVous);
-            consultationRepository.save(consultation);
+            consultation.setRendezVous(rendezVous1);
+            hospitalService.saveConsultation(consultation);
         };
     }
 

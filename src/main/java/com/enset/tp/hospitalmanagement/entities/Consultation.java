@@ -15,6 +15,6 @@ public class Consultation {
     private Long id;
     private Date date;
     private String rapport;
-    @OneToOne(mappedBy = "rendezVous")
+    @OneToOne
     private RendezVous rendezVous;
 }
